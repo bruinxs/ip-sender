@@ -20,9 +20,10 @@ def is_ip_change():
         print(e)
 
     try:
-        with open('last_ip.txt', 'r+') as f:
+        with open('last_ip.txt', 'r') as f:
             last_ip = f.read()
-            if last_ip != ip:
+        if last_ip != ip:
+            with open('last_ip.txt', 'w') as f:
                 f.write(ip)
     except FileNotFoundError as e:
         with open('last_ip.txt', 'x+') as f:
