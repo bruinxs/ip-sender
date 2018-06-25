@@ -2,7 +2,7 @@
 
 set -e
 
-cp -f ./ipsender.conf /etc
+cp -n ./ipsender.conf /etc
 cp -f ./ipsender.py /usr/local/bin
 chmod +x /usr/local/bin/ipsender.py
 cp -f ./ipsenderd.service /etc/systemd/system
