@@ -6,7 +6,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
 import time
-import argparse
+import configparser, argparse
 
 def is_ip_change():
     ip = None
@@ -20,13 +20,13 @@ def is_ip_change():
         print(e)
 
     try:
-        with open('last_ip.txt', 'r') as f:
+        with open('/tmp/last_ip.txt', 'r') as f:
             last_ip = f.read()
         if last_ip != ip:
-            with open('last_ip.txt', 'w') as f:
+            with open('/tmp/last_ip.txt', 'w') as f:
                 f.write(ip)
     except FileNotFoundError as e:
-        with open('last_ip.txt', 'x+') as f:
+        with open('/tmp/last_ip.txt', 'x+') as f:
             f.write(ip)
         print(e)
 
@@ -50,18 +50,31 @@ def send_mail(smtp_host, smtp_user, smtp_passwd, mail_receiver, ip):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--host", help="smtp host", required=True)
-    parser.add_argument("-u", "--user", help="smtp user", required=True)
-    parser.add_argument("-p", "--passwork", help="smtp passwork", required=True)
-    parser.add_argument("-r", "--receiver", help="mail receiver", required=True)
+    parser.add_argument("-c", "--config", help="config file", required=True)
     args = parser.parse_args()
+    
+    try:
+        config = configparser.ConfigParser()
+        config.read(args.config)
+        host = config[config.default_section]["host"]
+        user = config[config.default_section]["user"]
+        passwork = config[config.default_section]["passwork"]
+        receiver = config[config.default_section]["receiver"]
+
+        if host == "" or user == "" or  receiver == "":
+            print(args.config, "config is illegal")
+            exit(1)
+
+    except Exception as e:
+        print(e)
+        exit(1)
 
     while True:
         try:
             print("run...")
             ip = is_ip_change()
             if ip :
-                send_mail(args.host, args.user, args.passwork, args.receiver, ip)
+                send_mail(host, user, passwork, receiver, ip)
         except Exception as e:
             print(e)
         time.sleep(600)

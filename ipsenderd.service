@@ -1,0 +1,14 @@
+[Unit]
+Description=public network sender
+Documentation=https://github.com/bruinxs/ip-sender
+After=network-online.target
+
+[Service]
+Type=simple
+PIDFile=/var/run/ipsenderd.pid
+ExecStart=/usr/local/bin/ipsender.py -c /etc/ipsender.conf
+ExecStop=kill -9 `cat /var/run/ipsenderd.pid`
+
+[Install]
+WantedBy=multi-user.targe
+Alias=ipsenderd.service
